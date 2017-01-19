@@ -1,0 +1,48 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+
+$ccTypeName = $this->getInfo()->getCcType()
+    ? Mage::helper('hpci')->getCcTypeName($this->getInfo()->getCcType())
+    : Mage::helper('payment')->__('N/A');
+?>
+<?php echo $this->htmlEscape($this->getMethod()->getTitle()) ?><br />
+<?php if ($this->getInfo()->getLastTransId() == ''): ?>
+    <?php echo Mage::helper('hpci')->__('Payment has not been processed yet.') ?><br />
+<?php else: ?>
+    <?php $paymentData = unserialize($this->getInfo()->getOrder()->getHpciPaymentData()); ?>
+    <?php parse_str($paymentData['pxyResponse_fullNativeResp'], $resp); ?>
+    <?php echo Mage::helper('hpci')->__('Credit Card: %s', $this->htmlEscape($paymentData['pxyResponse_processorType'])) ?><br />
+    <?php echo Mage::helper('hpci')->__('Transaction Type: %s', $this->htmlEscape('?')) ?><br />
+    <?php echo Mage::helper('hpci')->__('Credit Card Type: %s', $ccTypeName) ?><br />
+    <?php echo Mage::helper('hpci')->__('Credit Card Number: %s', isset($paymentData['cc_number']) ? $paymentData['cc_number'] : $this->getInfo()->getCcLast4()) ?><br />
+    <?php echo Mage::helper('hpci')->__('Expiry Date: %s', $this->getInfo()->getCcExpMonth() . ' / ' . $this->getInfo()->getCcExpYear()) ?><br />
+    <?php echo Mage::helper('hpci')->__('Hpci Transaction ID: %s', $this->htmlEscape($this->getInfo()->getLastTransId())) ?><br />
+    <?php echo Mage::helper('hpci')->__('Status Response: %s', $this->htmlEscape($paymentData['pxyResponse_responseStatus_name'])) ?><br />
+    <?php echo Mage::helper('hpci')->__('CVV2 Result: %s', $this->htmlEscape($paymentData['pxyResponse_responseCVV2'])) ?><br />
+    <?php echo Mage::helper('hpci')->__('AVS1 Result: %s', $this->htmlEscape($paymentData['pxyResponse_responseAVS1'])) ?><br />
+    <a href="#" onclick="$('hpci_full_resp').show(); return false;"><?php echo Mage::helper('hpci')->__('Show full response') ?></a><hr>
+
+    <div id="hpci_full_resp" style="display: none">
+        <?php foreach($resp as $k => $v): ?>
+            <?php echo $k . ' = ' . $this->htmlEscape($v) ?><br />
+        <?php endforeach; ?><br />
+    </div>
+<?php endif; ?>

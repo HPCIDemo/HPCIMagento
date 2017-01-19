@@ -1,0 +1,52 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+$transaction = Mage::getModel('hpci/transaction')->load($this->getRequest()->getParam('transaction_id'));
+?>
+<div class="content-header">
+<table cellspacing="0">
+    <tbody>
+    <tr>
+        <td>
+            <h3><?php echo 'Transaction #' . $transaction->getId() . ( $transaction->getOrderId() ? (' for order #' . $transaction->getOrderId()) : '' ) ?></h3>
+        </td>
+        <!--<td class="form-buttons">
+            <button title="Contact Support" type="button" class="scalable save" onclick="if(confirm('Send request to Support?')) window.location.href='<?php echo $this->getUrl('hpci_admin/hpci/support', array('id' => $transaction->getId())) ?>';" style="">
+                <span><span><span>Contact Support</span></span></span>
+            </button>
+        </td>-->
+    </tr>
+    </tbody>
+</table>
+</div>
+
+<div style="float:left; width: 45%;padding: 0;margin: 0;">
+    <h3>Request</h3>
+    <textarea name="" id="" style="width:100%" cols="120" rows="30" readonly>
+    <?php print_r($transaction->getRequest()); ?>
+    </textarea>
+</div>
+<div style="float:right;;width: 45%;padding: 0;margin: 0 2% 0 0;">
+    <h3>Response</h3> 
+    <textarea name="" id="" style="width:100%" rows="30" readonly>
+
+    <?php print_r($transaction->getResponse()); ?>
+        </textarea>
+</div>

@@ -1,0 +1,115 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+?>
+<script type="text/javascript">
+    //<![CDATA[
+    var quoteBaseGrandTotal = <?php echo (float)$this->getQuoteBaseGrandTotal(); ?>;
+    var checkQuoteBaseGrandTotal = quoteBaseGrandTotal;
+    var payment = new Payment('co-payment-form', '<?php echo $this->getUrl('checkout/onepage/savePayment') ?>');
+    var lastPrice;
+    //]]>
+</script>
+<?php
+$_configVars = Mage::helper('hpci')->getConfigVars();
+$oscCheck = Mage::helper('hpci')->getOscCheck();
+?>
+
+<form action="" id="co-payment-form">
+    <fieldset>
+        <?php echo $this->getChildHtml('methods') ?>
+    </fieldset>
+</form>
+<div class="buttons-set" id="payment-buttons-container">
+    <!--    <p class="required">--><?php //echo $this->__('* Required Fields') ?><!--</p>-->
+    <!--    <p class="back-link"><a href="#" onclick="checkout.back(); return false;"><small>&laquo; </small>-->
+    <?php //echo $this->__('Back') ?><!--</a></p>-->
+    <button type="button" class="button btn" onclick="save_payment()">
+        <span><span><?php echo $this->__('Continue') ?></span></span></button>
+    <span class="please-wait" id="payment-please-wait" style="display:none;">
+        <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>"
+             alt="<?php echo $this->__('Loading next step...') ?>"
+             title="<?php echo $this->__('Loading next step...') ?>"
+             class="v-middle"/> <?php echo $this->__('Loading next step...') ?>
+    </span>
+</div>
+<script type="text/javascript">
+    //<![CDATA[
+    function toggleToolTip(event) {
+        if ($('payment-tool-tip')) {
+            $('payment-tool-tip').setStyle({
+                top: (Event.pointerY(event) - 560) + 'px'//,
+                //left: (Event.pointerX(event)+100)+'px'
+            })
+            $('payment-tool-tip').toggle();
+        }
+        Event.stop(event);
+    }
+    //]]>
+</script>
+
+<script>
+
+
+    function save_payment() {
+        console.log('save pay');
+        if (payment.currentMethod == 'hpci_acc') {
+
+            if (!(new Date(jQuery('[name="payment[cc_exp_year]"]').val(), jQuery('[name="payment[cc_exp_month]"]').val() - 1) > new Date())) {
+
+                console.log(new Date(jQuery('[name="payment[cc_exp_year]"]').val(), jQuery('[name="payment[cc_exp_month]"]').val() - 1));
+
+                if (!jQuery('[name="payment[cc_exp_year]"]').val() || !jQuery('[name="payment[cc_exp_month]"]').val()) {
+                    jQuery('#card_expired_validation_advice').text('Expiration date should be set');
+                }
+                else {
+                    jQuery('#card_expired_validation_advice').show();
+                }
+
+                return;
+            }
+            else {
+                jQuery('#card_expired_validation_advice').hide();
+            }
+            ;
+        }
+//        console.log('new card visible='+jQuery('#hpci_card_info_new').is(':visible'));
+        checkout.currentStep = 'payment';
+        if (payment.currentMethod == 'hpci_acc') {
+            if (jQuery('#hpci_card_info_new').is(':visible')) {
+                showCcForm('hpci_card_info_new');
+                sendHPCIMsg();
+            }
+            else {
+                showCcForm('hpci_card_info_existing');
+                payment.save();
+            }
+        }
+        else {
+            payment.save();
+        }
+    }
+</script>
+<script type="text/javascript">
+    //<![CDATA[
+    payment.currentMethod = "<?php echo $this->getChild('methods')->getSelectedMethodCode() ?>";
+
+    //]]>
+</script>

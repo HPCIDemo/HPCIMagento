@@ -1,0 +1,188 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+
+$_configVars = Mage::helper('hpci')->getConfigVars();
+
+$months = Mage::getSingleton('payment/config')->getMonths();
+
+$years = Mage::getSingleton('payment/config')->getYears();
+$years = array(0 => $this->__('Year')) + $years;
+
+$cards = Mage::getModel('hpci/card')->getCustomerCards(Mage::getSingleton('customer/session')->getCustomerId());
+$types = Mage::getModel('hpci/card')->getCcTypes();
+
+$addressId = Mage::getSingleton('customer/session')->getCustomer()->getDefaultBilling()
+?>
+<div class="page-title">
+    <h1><?php echo $this->__('Address Information') ?></h1>
+</div>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<form action="" method="post" id="form-validate" autocomplete="off">
+    <?php echo $this->getBlockHtml('formkey') ?>
+
+    <?php if ($addressId): ?>
+        <p class="item">
+        <address>
+            <?php echo Mage::getSingleton('customer/session')->getCustomer()->getAddressById($addressId)->format('html') ?>
+        </address>
+        <a href="<?php echo $this->getUrl('customer/address/') ?>"><?php echo $this->__('Edit Address Information') ?></a>
+        </p>
+    <?php else: ?>
+        <p class="item">
+            <a href="<?php echo $this->getUrl('customer/address/') ?>"><?php echo $this->__('You have no default billing address in your address book. Add Address now') ?></a>
+        </p>
+    <?php endif ?>
+
+    <div class="fieldset panel">
+        <h2 class="fieldset-title"> <?php echo $this->__('Credit Cards Information') ?></h2>
+        <?php foreach ($cards as $card): ?>
+            <div class="panel fieldset ">
+                <h2 class="legend">
+                    <?php echo $this->__(($card->getIsDefault() ? 'Default' : 'Additional') . ' Credit Card') ?>
+                    <?php if (Mage::getStoreConfig('hpci/settings/delete_default_card') or !$card->getIsDefault()): ?>
+                        <a href="<?php echo $this->getUrl('hpci/cards/delete', array('id' => $card->getId())) ?>" onclick="return confirm('<?php echo $this->__('Delete Card') ?>?')"><?php echo $this->__('Delete Card') ?></a>
+                    <?php endif; ?>
+                    <?php if (!$card->getIsDefault()): ?>
+                        <a href="<?php echo $this->getUrl('hpci/cards/default', array('id' => $card->getId())) ?>" onclick="return confirm('<?php echo $this->__('Make it Default?') ?>?')"><?php echo $this->__('Make it Default') ?></a>
+                    <?php endif; ?>
+                </h2>
+                <b><?php echo $this->__('Nickname') ?>:</b> <?php echo $card->getNickname() ? $card->getNickname() : 'empty' ?><br>
+                <b><?php echo $this->__('Type') ?>:</b> <?php echo $card->getCcTypeName() ?><br>
+                <b><?php echo $this->__('Number') ?>:</b> <?php echo $card->getCcNumberLast4() ?><br>
+                <b><?php echo $this->__('Exp Date') ?>:</b> <?php echo $card->getCcExpMonth() ?>/<?php echo $card->getCcExpYear() ?>
+                <br>
+            </div>
+        <?php endforeach; ?>
+
+        <?php if (Mage::getSingleton('customer/session')->getCustomer()->getDefaultBilling()): ?>
+            <div class="panel fieldset ">
+                <h2 class="legend">
+                    <?php echo $this->__('Add Credit Card') ?>
+                </h2>
+                <div data-parent="#form-validate" class="collapse panel-content <?php if (Mage::getSingleton('customer/session')->getCustomer()->getDefaultBilling()): ?>in <?php endif; ?> ">
+                    <ul class="form-list">
+                        <li>
+                            <ul class="form-list" id="payment_form_hpci">
+                                <li>
+                                    <label for="hpci_nickname" class="required"><?php echo $this->__('Credit Card Nickname') ?></label>
+                                    <div class="input-box">
+                                        <input type="text" id="hpci_nickname" name="payment[nickname]" title="<?php echo $this->__('Credit Card Nickname') ?>" class="required-entry">
+                                    </div>
+                                </li>
+                                <li>
+                                    <label for="hpci_cc_type" class="required"><?php echo $this->__('Credit Card Type') ?></label>
+                                    <div class="input-box">
+                                        <select id="hpci_cc_type" name="payment[cc_type]" title="<?php echo $this->__('Credit Card Type') ?>" class="required-entry">
+                                            <option value=""><?php echo $this->__('--Please Select--') ?></option>
+                                            <?php $_ccType = $this->getInfoData('cc_type') ?>
+                                            <?php foreach ($types as $_typeCode => $_typeName): ?>
+                                                <option value="<?php echo $_typeCode ?>"><?php echo $_typeName ?></option>
+                                            <?php endforeach ?>
+                                        </select>
+                                    </div>
+                                </li>
+                                <li style="font-size: 1px;line-height: 1;padding: 0;margin: 0;">
+                                    <?php if (!isset($_configVars['hpci_url']) || $_configVars['hpci_url'] == '' || !isset($_configVars['hpci_location']) || $_configVars['hpci_location'] == '' || !isset($_configVars['hpci_sid']) || $_configVars['hpci_sid'] == '') : ?>
+                                        <?php echo Mage::helper('hpci')->__('This mode is not configured properly. Please inform to our web master.') ?>
+                                    <?php else: ?>
+                                        <iframe width="100%" height="80" frameborder="0" scrolling="NO" src="<?php echo $_configVars['hpci_url'] ?>?locationName=<?php echo $_configVars['hpci_location'] ?>&amp;sid=<?php echo $_configVars['hpci_sid'] ?>&amp;fullParentHost=<?php echo urlencode(Mage::helper('core/url')->getCurrentUrl()); ?>&amp;pgmode1=prod&amp;fullParentQStr=" name="hpciframe" id="hpciframe">If you can see this, your browser doesn't understand IFRAME.</iframe>
+                                        <div width="200px" style="float:left;display:none" id="validation_advice" class="validation-advice">
+                                            <?php
+                                            if (isset($_configVars['error_msg']) && ($_configVars['error_msg'] <> ""))
+                                            {
+                                                echo $_configVars['error_msg'];
+                                            }
+                                            else
+                                            {
+                                                echo $this->__("Please Enter a Valid Credit Card Info");
+                                            }
+                                            ?>
+                                        </div>
+                                        <input type="hidden" id="hpci_acc_cc_number" name="payment[cc_number]" class=""/>
+                                        <input type="hidden" id="hpci_acc_cc_id" name="payment[cc_cid]" class=""/>
+                                    <?php endif; ?>
+
+                                    <a href="#" class="cvv-what-is-this"><?php echo $this->__('What is this?') ?></a>
+                                    <div class="tool-tip" id="payment-tool-tip" style="display:none;">
+                                        <div class="btn-close">
+                                            <a href="#" id="payment-tool-tip-close" title="<?php echo $this->__('Close') ?>"><?php echo $this->__('Close') ?></a>
+                                        </div>
+                                        <div class="tool-tip-content">
+                                            <img src="<?php echo $this->getSkinUrl('images/cvv.gif') ?>" alt="<?php echo $this->__('Card Verification Number Visual Reference') ?>" title="<?php echo $this->__('Card Verification Number Visual Reference') ?>"/>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                </li>
+                                <li>
+                                    <br/>
+                                    <label for="hpci_expiration"><?php echo Mage::helper('payment')->__('Expiration Date') ?> </label>
+                                    <div class="input-box">
+                                        <select id="hpci_expiration" style="width:120px;" name="payment[cc_exp_month]" class="validate-cc-exp required-entry">
+                                            <option value=""><?php echo $this->__('Month') ?></option>
+                                            <?php foreach ($months as $k => $v): ?>
+                                                <option value="<?php echo $k ?>"><?php echo $v ?></option>
+                                            <?php endforeach ?>
+                                        </select>
+                                        <select id="hpci_expiration_yr" style="width:80px;" name="payment[cc_exp_year]" class="required-entry">
+                                            <?php foreach ($years as $k => $v): ?>
+                                                <option value="<?php echo $k ? $k : '' ?>"><?php echo $v ?></option>
+                                            <?php endforeach ?>
+                                        </select>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <div class="buttons-set">
+                        <button type="button" title="<?php echo $this->__('Add Card') ?>" class="button" onclick="sendHPCIMsg(); return false;">
+                            <span><span><?php echo $this->__('Add Card') ?></span></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        <?php else: ?>
+            <?php echo $this->__('Please, add contact information and billing address to add cards') ?>
+        <?php endif; ?>
+    </div>
+</form>
+<script type="text/javascript">
+    //<![CDATA[
+    function toggleToolTip(event) {
+        if ($('payment-tool-tip')) {
+            $('payment-tool-tip').setStyle({
+                top: (Event.pointerY(event)) + 10 + 'px'//,
+                //left: (Event.pointerX(event)+100)+'px'
+            })
+            $('payment-tool-tip').toggle();
+        }
+        Event.stop(event);
+    }
+    if ($('payment-tool-tip-close')) {
+        Event.observe($('payment-tool-tip-close'), 'click', toggleToolTip);
+    }
+    $$('.cvv-what-is-this').each(function (element) {
+        Event.observe(element, 'click', toggleToolTip);
+    });
+    //]]>
+
+    var hpciForm = new VarienForm('form-validate');
+</script>

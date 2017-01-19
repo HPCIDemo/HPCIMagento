@@ -1,0 +1,485 @@
+<?xml version="1.0"?><!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+-->
+<config>
+    <sections>
+        <payment>
+            <groups>
+                <hpci_acc translate="label" module="hpci">
+                    <label>Hosted PCI</label>
+                    <frontend_type>text</frontend_type>
+                    <frontend_class>complex</frontend_class>
+                    <sort_order>201</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <payment type="group" translate="label">
+                            <label>Payment</label>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>1</sort_order>
+                            <fields>
+                                <active translate="label">
+                                    <label>Enabled</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>adminhtml/system_config_source_yesno</source_model>
+                                    <sort_order>1</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>0</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>payment/hpci_acc/active</config_path>
+                                </active>
+                                <sort_order translate="label">
+                                    <label>Sort Order</label>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>3</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>payment/hpci_acc/sort_order</config_path>
+                                </sort_order>
+                                <title translate="label">
+                                    <label>Title</label>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>5</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>payment/hpci_acc/title</config_path>
+                                </title>
+                                <cctypes translate="label">
+                                    <label>Credit Card Types</label>
+                                    <frontend_type>multiselect</frontend_type>
+                                    <source_model>adminhtml/system_config_source_payment_cctype</source_model>
+                                    <sort_order>15</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>payment/hpci_acc/cctypes</config_path>
+                                </cctypes>
+                                <payment_action translate="label">
+                                    <label>Payment Action</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>hpci/source_paymentAction</source_model>
+                                    <sort_order>2</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>payment/hpci_acc/payment_action</config_path>
+                                </payment_action>
+                                <allowspecific translate="label">
+                                    <label>Payment from Applicable Countries</label>
+                                    <frontend_type>allowspecific</frontend_type>
+                                    <config_path>payment/hpci_acc/allowspecific</config_path>
+                                    <sort_order>6</sort_order>
+                                    <source_model>adminhtml/system_config_source_payment_allspecificcountries
+                                    </source_model>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>payment/hpci_acc/allowspecific</config_path>
+                                </allowspecific>
+                                <specificcountry translate="label">
+                                    <label>Payment from Specific Countries</label>
+                                    <frontend_type>multiselect</frontend_type>
+                                    <sort_order>7</sort_order>
+                                    <source_model>adminhtml/system_config_source_country</source_model>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <can_be_empty>1</can_be_empty>
+                                    <config_path>payment/hpci_acc/specificcountry</config_path>
+                                </specificcountry>
+                                <order_status translate="label">
+                                    <label>New Order Status</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>adminhtml/system_config_source_order_status_newprocessing</source_model>
+                                    <sort_order>20</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>payment/hpci_acc/order_status</config_path>
+                                </order_status>
+                            </fields>
+                        </payment>
+                        <general type="group" translate="label">
+                            <label>General Settings</label>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>2</sort_order>
+                            <fields>
+                                <vid translate="label,comment">
+                                    <label>Module Version</label>
+                                    <frontend_type>version</frontend_type>
+                                    <extension>Hostedpci_Hpci</extension>
+                                    <sort_order>0</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/vid</config_path>
+                                </vid>
+                                <manage_cards translate="label">
+                                    <label>Manage Cards</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>adminhtml/system_config_source_yesno</source_model>
+                                    <sort_order>10</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/manage_cards</config_path>
+                                </manage_cards>
+                                <hpci_serviceurl translate="label,comment">
+                                    <label>API Url</label>
+                                    <comment></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>1</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/hpci_serviceurl</config_path>
+                                </hpci_serviceurl>
+                                <hpci_sid translate="label,comment">
+                                    <label>HPCI Site Id</label>
+                                    <comment>
+                                        <![CDATA[Is the site id (a number) configured and provided by HPCI after the activation of the HPCI account. There will be a different Site Id for staging and live sites.]]></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>2</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/hpci_sid</config_path>
+                                </hpci_sid>
+                                <hpci_apiun translate="label,comment">
+                                    <label>API Username</label>
+                                    <comment></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>3</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/hpci_apiun</config_path>
+                                </hpci_apiun>
+                                <hpci_apipk translate="label,comment">
+                                    <label>API Passkey</label>
+                                    <comment></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>4</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/hpci_apipk</config_path>
+                                </hpci_apipk>
+                                <hpci_location translate="label,comment">
+                                    <label>Location</label>
+                                    <comment>It is the location reference within the HPCI application. Locations are
+                                        configured
+                                        through the HPCI customer portal.
+                                    </comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>5</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/hpci_location</config_path>
+                                </hpci_location>
+                                <hpci_url translate="label,comment">
+                                    <label>Iframe Url</label>
+                                    <comment>This is Iframe url to be used for CC and CVV field. Only mention url
+                                        without
+                                        query
+                                        string e.g. https://cc.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action.
+                                    </comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>6</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/hpci_url</config_path>
+                                </hpci_url>
+                                <delete_default_card translate="label">
+                                    <depends>
+                                        <manage_cards>1</manage_cards>
+                                    </depends>
+                                    <label>Allow Delete Default Card</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>adminhtml/system_config_source_yesno</source_model>
+                                    <sort_order>31</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/delete_default_card</config_path>
+                                </delete_default_card>
+                                <fraud_protection_interval translate="label">
+                                    <label>Fraud Protection</label>
+                                    <comment>Disable Payments from IP for N minutes</comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>50</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>0</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>hpci/settings/fraud_protection_interval</config_path>
+                                </fraud_protection_interval>
+                            </fields>
+                        </general>
+                        <advanced type="group" translate="label">
+                            <label>Advanced Settings</label>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>3</sort_order>
+                            <fields>
+                                <payment_profile translate="label,comment">
+                                    <label>Payment Profile</label>
+                                    <comment><![CDATA[]]></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>1</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/payment_profile</config_path>
+                                </payment_profile>
+                                <product_name translate="label,comment">
+                                    <label>HPCI Product Name</label>
+                                    <comment><![CDATA[Merchant Product Name]]></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>1</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>hpci/settings/product_name</config_path>
+                                </product_name>
+                                <phone_num translate="label,comment">
+                                    <label>HPCI Phone Number</label>
+                                    <comment><![CDATA[Merchant Phone Number]]></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>2</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>hpci/settings/phone_num</config_path>
+                                </phone_num>
+                                <account_name translate="label,comment">
+                                    <label>HPCI Account Name</label>
+                                    <comment><![CDATA[Merchant Account Name]]></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>3</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>hpci/settings/account_name</config_path>
+                                </account_name>
+                                <payment_type translate="label">
+                                    <label>CheckOut Type</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>hpci/source_paymentType</source_model>
+                                    <sort_order>4</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>hpci/settings/payment_type</config_path>
+                                </payment_type>
+                                <error_msg translate="label,comment">
+                                    <label>CCError Message</label>
+                                    <comment>
+                                        <![CDATA[This error message will be displayed at front end when the user enters wrong credit card info.]]></comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>5</sort_order>
+                                    <show_in_default>2</show_in_default>
+                                    <show_in_website>0</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>hpci/settings/error_msg</config_path>
+                                </error_msg>
+                                <transactions_lifetime translate="label,comment">
+                                    <label>Transactions Lifetime</label>
+                                    <comment>In days. Default 60. Oldest transactions will be removed</comment>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>6</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>0</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>hpci/settings/transactions_lifetime</config_path>
+                                </transactions_lifetime>
+
+                                <card_exp_enabled translate="label comment">
+                                    <label>Card Expiration Reminder</label>
+                                    <comment><![CDATA[]]></comment>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>adminhtml/system_config_source_yesno</source_model>
+                                    <sort_order>7</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/card_exp_enabled</config_path>
+                                </card_exp_enabled>
+                                <card_exp_sender_email translate="label">
+                                    <depends>
+                                        <card_exp_enabled>1</card_exp_enabled>
+                                    </depends>
+                                    <label>Sender Email</label>
+                                    <frontend_type>text</frontend_type>
+                                    <validate>validate-email</validate>
+                                    <backend_model>hpci/system_config_backend_email_address</backend_model>
+                                    <sort_order>8</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/card_exp_sender_email</config_path>
+                                </card_exp_sender_email>
+                                <card_exp_sender_name translate="label">
+                                    <depends>
+                                        <card_exp_enabled>1</card_exp_enabled>
+                                    </depends>
+                                    <label>Sender Name</label>
+                                    <frontend_type>text</frontend_type>
+                                    <backend_model>hpci/system_config_backend_email_sender</backend_model>
+                                    <validate>validate-emailSender</validate>
+                                    <sort_order>9</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/card_exp_sender_name</config_path>
+                                </card_exp_sender_name>
+                                <card_exp_bcc translate="label">
+                                    <depends>
+                                        <card_exp_enabled>1</card_exp_enabled>
+                                    </depends>
+                                    <label>Email BCC</label>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>10</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/card_exp_bcc</config_path>
+                                </card_exp_bcc>
+                                <card_exp_bcc_method translate="label">
+                                    <depends>
+                                        <card_exp_enabled>1</card_exp_enabled>
+                                    </depends>
+                                    <label>Send Order Email Copy Method</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>adminhtml/system_config_source_email_method</source_model>
+                                    <sort_order>11</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/card_exp_bcc_method</config_path>
+                                </card_exp_bcc_method>
+                                <card_exp_template translate="label comment">
+                                    <depends>
+                                        <card_exp_enabled>1</card_exp_enabled>
+                                    </depends>
+                                    <label>Expiring Card Email</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>adminhtml/system_config_source_email_template</source_model>
+                                    <sort_order>12</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>1</show_in_store>
+                                    <config_path>hpci/settings/card_exp_template</config_path>
+                                </card_exp_template>
+                            </fields>
+                        </advanced>
+                        <antifraud type="group" translate="label">
+                            <label>Anti Fraud Setting</label>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>1</sort_order>
+                            <fields>
+                                <kount_enabled translate="label">
+                                    <label>Kount Enabled</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>adminhtml/system_config_source_yesno</source_model>
+                                    <sort_order>1</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <config_path>payment/hpci_acc/antifraud/kount_enabled</config_path>
+                                </kount_enabled>
+
+                                <kount_merchantnum>
+                                    <depends>
+                                        <kount_enabled>1</kount_enabled>
+                                    </depends>
+                                    <label>Merchant Number</label>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>20</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <comment>Your 6 digit merchant number you wish to use from AWC.</comment>
+                                    <config_path>payment/hpci_acc/antifraud/kount_merchantnum</config_path>
+                                </kount_merchantnum>
+                                <kount_website>
+                                    <depends>
+                                        <kount_enabled>1</kount_enabled>
+                                    </depends>
+                                    <label>Website ID</label>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>30</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <comment>The Website ID from AWC, exactly as it appears.</comment>
+                                    <config_path>payment/hpci_acc/antifraud/kount_website</config_path>
+                                </kount_website>
+                                <kount_test>
+                                    <depends>
+                                        <kount_enabled>1</kount_enabled>
+                                    </depends>
+                                    <label>Environment</label>
+                                    <frontend_type>select</frontend_type>
+                                    <source_model>hpci/source_kount_environment</source_model>
+                                    <sort_order>40</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <comment>Whether the extension server will run in test mode.</comment>
+                                    <config_path>payment/hpci_acc/antifraud/kount_test</config_path>
+                                </kount_test>
+                                <kount_api_key>
+                                    <depends>
+                                        <kount_enabled>1</kount_enabled>
+                                    </depends>
+                                    <label>API Key</label>
+                                    <frontend_type>text</frontend_type>
+                                    <sort_order>50</sort_order>
+                                    <show_in_default>1</show_in_default>
+                                    <show_in_website>1</show_in_website>
+                                    <show_in_store>0</show_in_store>
+                                    <comment>API authentication token.</comment>
+                                    <config_path>payment/hpci_acc/antifraud/kount_api_key</config_path>
+                                </kount_api_key>
+                            </fields>
+                        </antifraud>
+                    </fields>
+                </hpci_acc>
+            </groups>
+        </payment>
+    </sections>
+</config>

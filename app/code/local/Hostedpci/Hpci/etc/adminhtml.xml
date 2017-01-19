@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+-->
+<config>
+    <menu>
+        <snowcommerce>
+            <children>
+                <hpci translate="title" module="hpci">
+                    <title>Hosted PCI</title>
+                    <sort_order>1000</sort_order>
+                    <children>
+                        <configuration translate="title" module="hpci">
+                            <title>Configuration</title>
+                            <sort_order>100</sort_order>
+                            <action>adminhtml/system_config/edit/section/payment</action>
+                        </configuration>
+                        <transactions translate="title" module="hpci">
+                            <title>Transactions</title>
+                            <sort_order>100</sort_order>
+                            <action>adminhtml/hpci/transactions</action>
+                        </transactions>
+                    </children>
+                </hpci>
+            </children>
+        </snowcommerce>
+        <sales>
+            <children>
+                <hpci translate="title" module="hpci">
+                    <title>Hosted PCI</title>
+                    <sort_order>1000</sort_order>
+                    <children>
+                        <configuration translate="title" module="hpci">
+                            <title>Configuration</title>
+                            <sort_order>100</sort_order>
+                            <action>adminhtml/system_config/edit/section/payment</action>
+                        </configuration>
+                        <transactions translate="title" module="hpci">
+                            <title>Transactions</title>
+                            <sort_order>100</sort_order>
+                            <action>adminhtml/hpci/transactions</action>
+                        </transactions>
+                    </children>
+                </hpci>
+            </children>
+        </sales>
+    </menu>
+    <acl>
+        <resources>
+            <all>
+                <title>Allow Everything</title>
+            </all>
+            <admin>
+                <children>
+                    <snowcommerce>
+                        <children>
+                            <hpci module="hpci">
+                                <title>HPCI</title>
+                                <sort_order>4000</sort_order>
+                                <children>
+                                    <transactions>
+                                        <title>Transactions</title>
+                                        <sort_order>100</sort_order>
+                                    </transactions>
+                                </children>
+                            </hpci>
+                        </children>
+                    </snowcommerce>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

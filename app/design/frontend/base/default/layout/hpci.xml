@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+-->
+<layout version="0.1.0">
+    <customer_account>
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="hpci">
+                <name>hpci_manage_cards</name>
+                <path>hpci/cards</path>
+                <label>Manage Credit Cards</label>
+                <params></params>
+                <checkPath>hpci/settings/manage_cards</checkPath>
+            </action>
+        </reference>
+    </customer_account>
+
+    <hpci_processing_payment>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="hpci/payment" name="hpci_payment" template="hpci/payment.phtml" />
+        </reference>
+    </hpci_processing_payment>
+
+    <hpci_processing_placeform>
+        <reference name="root">
+            <action method="setTemplate"><template>hpci/blank.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="hpci/placeform" name="hpci_placeform" template="hpci/placeform.phtml" />
+        </reference>
+    </hpci_processing_placeform>
+
+    <checkout_onepage_index translate="label">
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>css/hpci.css</name>
+            </action>
+
+            <block type="core/template" name="hpci_handlers" template="hpci/scripts.phtml"/>
+            <block type="core/text" name="google.cdn.jquery">
+                <!--<action method="setText">-->
+                    <!--<text><![CDATA[<script src="//code.jquery.com/jquery-1.11.0.min.js"></script><script>jQuery.noConflict();</script>]]></text>-->
+                <!--</action>-->
+            </block>
+        </reference>
+        <reference name="root">
+            <action method="addBodyClass">
+                <className>checkout</className>
+            </action>
+            <action method="setTemplate">
+                <template>page/2columns-right.phtml</template>
+            </action>
+        </reference>
+        <reference name="checkout.onepage.payment">
+            <action method="setTemplate">
+                <template>hpci/checkout/onepage/payment.phtml</template>
+            </action>
+        </reference>
+    </checkout_onepage_index>
+
+    <checkout_multishipping translate="label">
+        <label>Multishipping Checkout</label>
+        <!-- Mage_Checkout -->
+        <remove name="right"/>
+        <remove name="left"/>
+
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>css/hpci.css</name>
+            </action>
+
+            <block type="core/template" name="hpci_handlers" template="hpci/scripts.phtml"/>
+            <block type="core/text" name="google.cdn.jquery">
+                <!--<action method="setText">-->
+                <!--<text><![CDATA[<script src="//code.jquery.com/jquery-1.11.0.min.js"></script><script>jQuery.noConflict();</script>]]></text>-->
+                <!--</action>-->
+            </block>
+        </reference>
+
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <!--<block type="checkout/multishipping_state" name="checkout_state" template="checkout/multishipping/state.phtml"/>-->
+        </reference>
+    </checkout_multishipping>
+    <checkout_multishipping_billing translate="label">
+        <!-- Mage_Checkout -->
+        <reference name="checkout_billing">
+            <action method="setTemplate"><template>hpci/checkout/multishipping/billing.phtml</template></action>
+        </reference>
+    </checkout_multishipping_billing>
+
+    <hpci_cards_index>
+
+        <label>Manage Cards</label>
+        <update handle="customer_account"/>
+        <reference name="root">
+            <action method="setHeaderTitle" translate="title" module="customer"><title>Manage Cards</title></action>
+        </reference>
+
+        <reference name="my.account.wrapper">
+            <block type="core/template" name="customer_edit" template="hpci/cards.phtml">
+                <block type="hpci/customer_address" name="address_form" template="hpci/customer/address.phtml"/>
+            </block>
+        </reference>
+
+        <reference name="left">
+            <action method="unsetChild"><name>left.permanent.callout</name></action>
+        </reference>
+
+        <reference name="head">
+
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>css/hpci.css</name>
+            </action>
+
+            <block type="core/template" name="hpci_handlers" template="hpci/scripts.phtml"/>
+            <block type="core/text" name="google.cdn.jquery">
+                <!--<action method="setText">-->
+                    <!--<text><![CDATA[<script src="//code.jquery.com/jquery-1.11.0.min.js"></script><script>jQuery.noConflict();</script>]]></text>-->
+                <!--</action>-->
+            </block>
+        </reference>
+    </hpci_cards_index>
+
+
+    <!-- Kount -->
+
+    <checkout_multishipping_overview translate="label">
+        <label>Kount Data Collector</label>
+        <reference name="content">
+            <block type="core/template" name="kount_datacollector" template="hpci/kount/checkout/datacollector.phtml"/>
+        </reference>
+    </checkout_multishipping_overview>
+    <checkout_onepage_review translate="label">
+        <label>Kount Data Collector</label>
+        <reference name="checkout.onepage.review.info.items.after">
+            <block type="core/template" name="kount_datacollector" template="hpci/kount/checkout/datacollector.phtml"/>
+        </reference>
+    </checkout_onepage_review>
+    <onestepcheckout_index_index>
+        <label>Kount Data Collector</label>
+        <reference name="content">
+            <block type="core/template" name="kount_datacollector" template="hpci/kount/checkout/datacollector.phtml"/>
+        </reference>
+    </onestepcheckout_index_index>
+    <paypal_express_review>
+        <label>Kount Data Collector</label>
+        <reference name="content">
+            <block type="core/template" name="kount_datacollector" template="hpci/kount/checkout/datacollector.phtml"/>
+        </reference>
+    </paypal_express_review>
+</layout>

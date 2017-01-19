@@ -1,0 +1,19 @@
+<?php
+$bEnabled = Mage::getStoreConfig('payment/hpci_acc/antifraud/kount_enabled');
+$bTestMode = Mage::getStoreConfig('payment/hpci_acc/antifraud/kount_test');
+Mage::helper('hpci/kount')->generateSessionID();
+
+$bHttps = Mage::app()->getStore()->isCurrentlySecure();
+?>
+<?php if ($bEnabled) : ?>
+    <iframe width="1" height="1" frameborder="0" scrolling="no"
+        src="<?php echo($this->getUrl('hpci/kount/iframe', array('_forced_secure' => $bHttps))); ?>"
+            <?php if ($bTestMode): ?>style=""<?php endif; ?>>
+        <img width="1" height="1" src="<?php echo($this->getUrl('hpci/kount/gif', array('_forced_secure' => $bHttps))); ?>" alt="" title=""/>
+    </iframe>
+    <?php if ($bTestMode): ?>
+        <script type = "text/javascript">
+            console.log('Staging k-data');
+        </script>
+    <?php endif; ?>
+<?php endif; ?>

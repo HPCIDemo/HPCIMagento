@@ -1,0 +1,265 @@
+<?php
+$_configVars = Mage::helper('hpci')->getConfigVars();
+$oscCheck = Mage::helper('hpci')->getOscCheck();
+$cards = new Varien_Data_Collection();
+$cid = Mage::getSingleton('customer/session')->getCustomerId();
+
+if($cid and Mage::getStoreConfig('hpci/settings/manage_cards'))
+{
+    $cards = Mage::getModel('hpci/card')->getCustomerCards($cid);
+}
+
+?>
+<?php foreach($cards as $card): ?>
+    <?php //Zend_Debug::dump($card) ?>
+<?php endforeach; ?>
+<script>
+    document.observe("dom:loaded", function() {
+      // initially hide all containers for tab content
+        var cards= {};
+        <?php foreach($cards as $card): ?>
+        cards["<?php echo $card->getCcNumberLast4() ?><?php echo $card->getNickname() ? ' (' . $card->getNickname() . ')' : '' ?>"] = {
+            cc_id:'<?php echo $card->getCcCid() ?>',
+            cc_number:'<?php echo $card->getCcNumber() ?>',
+            cc_number4:'<?php echo $card->getCcNumberLast4(); ?>',
+            cc_type:'<?php echo $card->getCcType() ?>',
+            cc_exp_month:'<?php echo $card->getCcExpMonth() ?>',
+            cc_exp_year:'<?php echo $card->getCcExpYear() ?>',
+            cc_nickname:'<?php echo $card->getNickname() ?>',
+        };
+        <?php endforeach; ?>
+        if( typeof jQuery !=='undefined' ){
+            console.log(jQuery('#checkoutSteps'));
+            jQuery('#checkoutSteps, #multishipping-billing-form').on('change','#hpci_card_info_selector',function(){
+                console.log(jQuery(this).val());
+                if(typeof cards[jQuery(this).val()]!='undefined'){
+                    showCcForm('hpci_card_info_existing');
+
+                    var card_data = cards[jQuery(this).val()];
+                    jQuery.each(card_data,function (key,value) {
+                        console.log(key);
+                        console.log(value);
+                        jQuery('#'+key+'-label').text(value);
+                        jQuery('#hpci_card_info_existing_block').find('input[name="payment['+key+']"]').val(value);
+                    })
+                }
+                else{
+                    showCcForm('hpci_card_info_new');
+                }
+
+            });
+        }
+    });
+
+</script>
+
+
+<script type="text/javascript" charset="utf-8">
+
+    loadedJS = new Array();
+
+    loadjscssfile = function loadjscssfile(filename, filetype){
+        if (loadedJS.indexOf(filename)>-1)
+            return; //exit if file is already loaded
+
+        if (filetype=="js"){ //if filename is a external JavaScript file
+            var fileref=document.createElement('script')
+            fileref.setAttribute("type","text/javascript")
+            fileref.setAttribute("src", filename)
+        }
+        else if (filetype=="css"){ //if filename is an external CSS file
+            var fileref=document.createElement("link")
+            fileref.setAttribute("rel", "stylesheet")
+            fileref.setAttribute("type", "text/css")
+            fileref.setAttribute("href", filename)
+        }
+        if (typeof fileref!="undefined") {
+            document.getElementsByTagName("head")[0].appendChild(fileref);
+            loadedJS.push(filename);
+        }
+
+    };
+
+    //load the required JS files
+
+    numLooped = 0;
+    load_hpci_scripts = function (){
+        $hpciJ = jQuery.noConflict();
+        loadjscssfile("<?php echo $this->getSkinUrl("js/hpci/jquery.browser.js"); ?>", "js");
+        loadjscssfile("https://cc.hostedpci.com/WBSStatic/site60/proxy/js/jquery.ba-postmessage.2.0.0.min.js", "js");
+        loadjscssfile("<?php echo $this->getSkinUrl("js/hpci/hpci-cciframe-1.0.js"); ?>", "js");
+
+    }
+    // Only do anything if jQuery isn't defined
+    if (typeof jQuery == 'undefined') {
+
+        if (typeof $ == 'function') {
+            // warning, global var
+            thisPageUsingOtherJSLibrary = true;
+        }
+
+        function getScript(url, success) {
+
+            var script     = document.createElement('script');
+            script.src = url;
+
+            var head = document.getElementsByTagName('head')[0],
+                done = false;
+
+            // Attach handlers for all browsers
+            script.onload = script.onreadystatechange = function() {
+
+                if (!done && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')) {
+
+                    done = true;
+
+                    // callback function provided as param
+                    success();
+
+                    script.onload = script.onreadystatechange = null;
+                    head.removeChild(script);
+
+                };
+
+            };
+
+            head.appendChild(script);
+
+        };
+
+        getScript('https://code.jquery.com/jquery-1.11.3.min.js', function() {
+
+            if (typeof jQuery=='undefined') {
+                    console.log("jquery wasn't found")
+
+            } else {
+
+                // jQuery loaded! Make sure to use .noConflict just in case
+                jQuery.noConflict();
+                load_hpci_scripts();
+            }
+
+        });
+
+    } else { // jQuery was already loaded
+        load_hpci_scripts()
+    };
+
+
+</script>
+<script type="text/javascript">
+    hpciCCFrameHost = "https://cc.hostedpci.com";
+
+    var desktop_location = "<?php echo $_configVars['hpci_location'] ?>";
+    var mobile_location = "managecardsmobile";
+
+    var hpciCCFrameFullDesktopUrl = "<?php echo $_configVars['hpci_url'] ?>?locationName="+desktop_location+"&sid=<?php echo $_configVars['hpci_sid'] ?>&fullParentHost=<?php echo urlencode(Mage::helper('core/url')->getCurrentUrl());?>&<?php if($oscCheck){?>pgmode1=prod&<?php }?>fullParentQStr=";
+    var hpciCCFrameFullMobileUrl = "<?php echo $_configVars['hpci_url'] ?>?locationName="+mobile_location+"&sid=<?php echo $_configVars['hpci_sid'] ?>&fullParentHost=<?php echo urlencode(Mage::helper('core/url')->getCurrentUrl());?>&<?php if($oscCheck){?>pgmode1=prod&<?php }?>fullParentQStr=";
+
+    var hpciCCFrameFullUrl = hpciCCFrameFullDesktopUrl;
+
+    var hpciForm= new VarienForm('co-payment-form');
+
+    var hpciCCFrameName = "hpciframe";
+
+
+    hpciSiteErrorHandler = function(errorCode, errorMsg) {
+        <?php if($oscCheck == 0): ?>
+        if (errorMsg) {
+            jQuery('#validation_advice').css("display", '');
+            return false;
+        }
+        <?php endif; ?>
+
+        <?php if($oscCheck): ?>
+        /*re-endable onestepcheckout button*/
+        var submitelement = $('onestepcheckout-place-order');
+        submitelement.removeClassName('grey').addClassName('orange');
+        submitelement.disabled = false;
+        already_placing_order = false;
+
+        /*show the error message - TODO: replace with nice message to user*/
+        alert("Error while processing credit card code:" + errorCode + "; msg:" + errorMsg);
+
+        /*remove the processing order message/image*/
+        if (loaderelement != null) {
+            submitelement.parentNode.removeChild(loaderelement);
+        }
+
+        <?php endif; ?>
+    }
+
+    hpciSiteSuccessHandler = function (mappedCCValue, mappedCVVValue) {
+        console.log('hpciSiteSuccessHandler');
+        var ccNumInput,ccCVVInput;
+        jQuery('#validation_advice').css("display", 'none');
+        jQuery('[name="payment[cc_number]"]').val(mappedCCValue);
+
+        var ccn = jQuery('[name="payment[cc_number]"]');
+        ccn.val(mappedCCValue);
+        ccn.next('[name*="cid"]').val(mappedCVVValue);
+
+//        jQuery('[name="payment[cc_cid]"]').val(mappedCVVValue); Hello to KAS! Why he doesn't love this name??!!
+
+
+//        if(ccNumInput = jQuery('[name="payment[cc_number]"]')){
+//            ccNumInput.value = mappedCCValue;
+//        };
+//
+//        if(ccCVVInput = jQuery('[name="payment[cc_cid]"]:enabled')){
+//            ccCVVInput.value = mappedCVVValue;
+//        };
+        <?php if($oscCheck==0): ?>
+        console.log('inside hpciSiteSuccessHandler(): going to call payment.save() inside it again');
+//        console.log(mappedCCValue);
+//        console.log(mappedCVVValue);
+        try{
+            if(typeof payment !='undefined'){
+                console.log('typeof payment.save ');
+                console.log(typeof payment.save );
+                if(typeof payment.save =='function')
+                    payment.save();
+                else if(jQuery('#payment-continue').length){
+                    jQuery('#payment-continue').click();
+                }
+                else 
+                    payment.submit();
+            }
+            else
+                hpciForm.submit();
+        }
+        catch(e){
+            console.log('exception');
+            console.log(e);
+        }
+        <?php else: ?>
+        /*ready to submit the order now that the mapped CC is back*/
+        console.log('inside hpciSiteSuccessHandler(): going to call hpciForm.submit() for onestepcheckout version');
+        hpciForm.submit();
+        <?php endif; ?>
+    };
+
+    showCcForm = function (id) {
+        console.log(id);
+        if (id == 'hpci_card_info_existing') {
+            console.log('hide new')
+//            jQuery('#hpci_card_info_existing_a').hide();
+//            jQuery('#hpci_card_info_new_a').show();
+            jQuery('#hpci_card_info_new').hide().find('input, select').attr('disabled', true);
+            jQuery('#hpci_card_info_existing_block').show().find('input, select').attr('disabled', false);
+//            jQuery('#hpci_card_info_existing').show().find('input, select').attr('disabled', false);
+        }
+        else {
+            console.log('show new')
+
+//            jQuery('#hpci_card_info_existing_a').show();
+//            jQuery('#hpci_card_info_new_a').hide();
+//            jQuery('#hpci_card_info_existing').hide().find('input, select').attr('disabled', true);
+            jQuery('#hpci_card_info_new').show().find('input, select').attr('disabled', false);
+            jQuery('#hpci_card_info_existing_block').hide().find('input, select').attr('disabled', true);
+
+        }
+
+        return false;
+    }
+</script>

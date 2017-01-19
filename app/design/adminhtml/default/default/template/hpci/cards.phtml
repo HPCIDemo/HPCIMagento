@@ -1,0 +1,166 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+
+$_configVars = Mage::helper('hpci')->getConfigVars();
+$customer = Mage::registry('current_customer');
+
+// exp months
+$months = Mage::getSingleton('payment/config')->getMonths();
+
+// exp years
+$years = $this->getData('cc_years');
+if (is_null($years)) {
+    $years = Mage::getSingleton('payment/config')->getYears();
+    $years = array(0=>$this->__('Year'))+$years;
+}
+//$cards = Mage::getModel('hpci/card')->load($customer->getId())->getCustomerCards($customer->getId();
+$card = Mage::getModel('hpci/card')->getDefaultCard($customer->getId());
+$types = Mage::getModel('hpci/card')->getCcTypes();
+?>
+
+<script>
+    !function(e,t,r){function n(){for(;d[0]&&"loaded"==d[0][f];)c=d.shift(),c[o]=!i.parentNode.insertBefore(c,i)}for(var s,a,c,d=[],i=e.scripts[0],o="onreadystatechange",f="readyState";s=r.shift();)a=e.createElement(t),"async"in i?(a.async=!1,e.head.appendChild(a)):i[f]?(d.push(a),a[o]=n):e.write("<"+t+' src="'+s+'" defer></'+t+">"),a.src=s}(document,"script",[
+        "<?php echo $this->getSkinUrl("js/hpci/jquery.browser.js"); ?>",
+        "<?php echo $this->getSkinUrl("js/hpci/jquery.ba-postmessage.js"); ?>",
+        "<?php echo $this->getSkinUrl("js/hpci/hpci-cciframe-1.0.js"); ?>"
+    ])
+</script>
+<div class="page-title">
+    <h1><?php echo $this->__('Edit Account Information') ?></h1>
+</div>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+
+<?php if($customer->getDefaultBilling()): ?>
+<form action="" method="post" id="form-validate" autocomplete="off">
+    <div class="fieldset">
+        <?php echo $this->getBlockHtml('formkey')?>
+        <h2 class="legend"><?php echo $this->__($card ? 'Update Card' : 'Add Card') ?></h2>
+        <ul class="form-list">
+            <li>
+                <ul class="form-list" id="payment_form_hpci">
+                    <li>
+                        <label for="hpci_cc_type"><?php echo $this->__('Credit Card Type') ?></label>
+                        <div class="input-box">
+                            <select id="hpci_cc_type" name="payment[cc_type]" title="<?php echo $this->__('Credit Card Type') ?>">
+                                <option value=""><?php echo $this->__('--Please Select--') ?></option>
+                                <?php $_ccType = $this->getInfoData('cc_type') ?>
+                                <?php foreach ($types as $_typeCode => $_typeName): ?>
+                                    <option value="<?php echo $_typeCode ?>"><?php echo $_typeName ?></option>
+                                <?php endforeach ?>
+                            </select>
+                        </div>
+                    </li>
+                    <li>
+
+                        <?php if(!isset($_configVars['hpci_url']) || $_configVars['hpci_url'] == '' || !isset($_configVars['hpci_location']) || $_configVars['hpci_location'] == '' || !isset($_configVars['hpci_sid']) || $_configVars['hpci_sid'] == '') : ?>
+                            <?php echo Mage::helper('hpci')->__('This mode is not configured properly. Please inform to our web master.')?>
+                        <?php else: ?>
+                            <iframe width="100%" height="130" frameborder="0" scrolling="NO" src="<?php echo $_configVars['hpci_url'] ?>?locationName=<?php echo $_configVars['hpci_location'] ?>&amp;sid=<?php echo $_configVars['hpci_sid'] ?>&amp;fullParentHost=<?php echo urlencode(Mage::helper('core/url')->getCurrentUrl());?>&amp;pgmode1=prod&amp;fullParentQStr=" name="hpciframe" id="hpciframe">If you can see this, your browser doesn't understand IFRAME.</iframe>
+                            <div width="200px" style="float:left;display:none" id="validation_advice" class="validation-advice">
+                                <?php
+                                if(isset($_configVars['error_msg']) && ($_configVars['error_msg']<>""))
+                                {
+                                    echo $_configVars['error_msg'];
+                                }
+                                else
+                                {
+                                    echo "Please Enter a Valid Credit Card Info";
+                                }
+                                ?>
+                            </div>
+                            <input type="hidden" id="hpci_cc_number" name="payment[cc_number]"  class="" />
+                            <input type="hidden" id="hpci_cc_cid" name="payment[cc_cid]" class="" />
+                        <?php endif; ?>
+                    </li>
+
+                    <li>
+                        <label for="hpci_expiration"><?php echo Mage::helper('payment')->__('Expiration Date') ?></label>
+                        <div class="input-box">
+
+                        <select id="hpci_expiration" style="width:140px;" name="payment[cc_exp_month]" class="validate-cc-exp">
+                            <option value=""><?php echo $this->__('Month') ?></option>
+                                <?php foreach ($months as $k=>$v): ?>
+                                    <option value="<?php echo $k ?>" ><?php echo $v ?></option>
+                                <?php endforeach ?>
+                            </select>
+                            <select id="hpci_expiration_yr" style="width:103px;" name="payment[cc_exp_year]">
+                                <?php foreach ($years as $k=>$v): ?>
+                                    <option value="<?php echo $k ? $k : '' ?>"><?php echo $v ?></option>
+                                <?php endforeach ?>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <?php if($card): ?>
+    <div class="fieldset">
+        <h2 class="legend"><?php echo $this->__('Current Credit Card') ?></h2>
+        <b>Type:</b> <?php echo $card->getCcTypeName() ?><br>
+        <b>Number:</b> <?php echo $card->getCcNumber() ?><br>
+        <b>Exp Date:</b> <?php echo $card->getCcExpMonth() ?>/<?php echo $card->getCcExpYear() ?><br>
+    </div>
+    <?php endif; ?>
+
+    <div class="buttons-set">
+        <button type="button" title="<?php echo $this->__($card ? 'Update Card' : 'Add Card') ?>" class="button" onclick="sendHPCIMsg(); return false;"><span><span><?php echo $this->__($card ? 'Update Card' : 'Add Card') ?></span></span></button>
+        <?php if($card and Mage::getStoreConfig('hpci/settings/delete_default_card')): ?>
+            <button type="button" title="<?php echo $this->__($card ? 'Update Card' : 'Add Card') ?>" class="button" onclick="if(confirm('<?php echo $this->__('Delete credit card?') ?>')) window.location.href = '<?php echo $this->getUrl('hpci_admin/hpci/deleteCard', array('id' => $card)); ?>';"><span><span><?php echo $this->__('Delete Card') ?></span></span></button>
+        <?php endif; ?>
+    </div>
+</form>
+<?php else: ?>
+    <h2>Please, add contact information and billing address first</h2>
+<?php endif; ?>
+
+<script>
+    hpciCCFrameHost = "https://cc.hostedpci.com";
+    hpciCCFrameFullUrl = "<?php echo $_configVars['hpci_url'] ?>?locationName=<?php echo $_configVars['hpci_location'] ?>&amp;sid=<?php echo $_configVars['hpci_sid'] ?>&amp;fullParentHost=<?php echo urlencode(Mage::helper('core/url')->getCurrentUrl());?>&amp;<?php if($oscCheck){?>pgmode1=prod&amp;<?php }?>fullParentQStr=";
+    hpciCCFrameName = "hpciframe";
+
+    hpciSiteErrorHandler  = function(errorCode, errorMsg)
+    {
+        if(errorMsg)
+        {
+            jQuery('#opc-review').css('opacity', "0");
+            setTimeout(function(){
+                if(jQuery('#hpci_acc_cc_type').val() != "")
+                {
+                    jQuery('#validation_advice').css("display",'');
+                }
+                jQuery('#opc-review').css('opacity', "1");
+
+            },800);
+            return false;
+        }
+        return true;
+    }
+
+    hpciSiteSuccessHandler = function(mappedCCValue, mappedCVVValue)
+    {
+        var ccn = jQuery('[name="payment[cc_number]"]');
+        ccn.val(mappedCCValue);
+        ccn.next('[name*="cid"]').val(mappedCVVValue);
+        saveAndContinueEdit('<?php echo $this->getUrl('adminhtml/customer/save', array('back' => 'edit', 'tab' => 'hpci_credit_cards', 'id' => $customer->getId())) ?>');
+    }
+</script>

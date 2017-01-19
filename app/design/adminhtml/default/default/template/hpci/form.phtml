@@ -1,0 +1,43 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category    Hostedpci
+ * @package     Hostedpci_Hpci
+ * @author      Adam Chetverkin (adam.chetverkin@snowcommerce.com)
+ * @copyright   Copyright (c) 2016 Snow Commerce (http://snowcommerce.com)
+ * @license     @ Snow Commerce
+ */
+
+$payment = Mage::getSingleton('adminhtml/sales_order_create')->getSession()->getQuote()->getPayment();
+$card = Mage::getModel('hpci/card')->load($payment->getQuote()->getCustomerId(), 'customer_id');
+
+// load from card if it exists
+if(!$payment->getCcType())
+{
+    $card->unsetData('id');
+    $payment->addData($card->getData());
+}
+?>
+
+<ul id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none">
+    <b>Type:</b> <?php echo $payment->getCcType() ?><br>
+    <b>Number:</b> <?php echo $payment->getCcNumber() ?><br>
+    <b>Exp Date:</b> <?php echo $payment->getCcExpMonth() ?>/<?php echo $payment->getCcExpYear() ?><br>
+
+    <input type="hidden" name="payment[cc_type]" value="<?php echo $payment->getCcType() ?>">
+    <input type="hidden" name="payment[cc_id]" value="<?php echo $payment->getCcId() ?>">
+    <input type="hidden" name="payment[cc_number]" value="<?php echo $payment->getCcNumber() ?>">
+    <input type="hidden" name="payment[cc_exp_month]" value="<?php echo $payment->getCcExpMonth() ?>">
+    <input type="hidden" name="payment[cc_exp_year]" value="<?php echo $payment->getCcExpYear() ?>">
+</ul>
