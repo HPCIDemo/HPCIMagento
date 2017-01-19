@@ -9,5 +9,5 @@ http://www.hostedpci.com/
 
 ### Who do I talk to? ###
 
-* Elad Flafson
+* Elad Fass
 * ef@hostedpci.com
