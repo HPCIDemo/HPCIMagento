@@ -1,0 +1,34 @@
+{
+    "name": "hostedpci/tokenized-checkout",
+    "type": "magento-module",
+    "homepage": "https://github.com/HPCIDemo/HPCIMagento",
+    "description": "HPCI Extension",
+    "minimum-stability": "dev",
+    "authors":[
+        {
+            "name": "HostedPCI",
+            "email": "ef@hostedpci.com"
+        }
+    ],
+    "require":{
+        "magento-hackathon/magento-composer-installer": "*"
+    },
+    "extra": {
+        "map": [
+            ["app/code/local/Hostedpci", "app/code/local/Hostedpci"],
+            ["app/design/adminhtml/default/default/layout/hpci.xml", "app/design/adminhtml/default/default/layout/hpci.xml"],
+            ["app/design/adminhtml/default/default/template/hpci", "app/design/adminhtml/default/default/template/hpci"],
+            ["app/design/frontend/base/default/layout/hpci.xml", "app/design/frontend/base/default/layout/hpci.xml"],
+            ["app/design/frontend/base/default/template/hpci", "app/design/frontend/base/default/template/hpci"],
+            ["skin/frontend/base/default/css/hpci.css", "skin/frontend/base/default/css/hpci.css"],
+            ["skin/frontend/rwd/default/css/hpci.css", "skin/frontend/rwd/default/css/hpci.css"],
+            ["skin/frontend/base/default/js/hpci", "skin/frontend/base/default/js/hpci"],
+            ["skin/frontend/base/default/images/js-logo.gif", "skin/frontend/base/default/images/js-logo.gif"],
+            ["skin/adminhtml/base/default/js/hpci", "skin/adminhtml/base/default/js/hpci"],
+            ["app/etc/modules/Hostedpci_Hpci.xml", "app/etc/modules/Hostedpci_Hpci.xml"],
+            ["app/locale/fr_FR/Hostedpci_Hpci.csv", "app/locale/fr_FR/Hostedpci_Hpci.csv"],
+            ["lib/Varien/Data/Form/Element/Version.php", "lib/Varien/Data/Form/Element/Version.php"]
+        ],
+        "auto-append-gitignore": true
+    }
+}
